@@ -1,0 +1,249 @@
+---
+import { EVENT } from '../data/event';
+const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}${EVENT.music.src}`;
+---
+<aside class="player" data-playing="false" data-open="false" aria-label="Reproductor de música">
+  <audio src={src} preload="metadata" loop></audio>
+
+  <p class="hint" role="status">🎶 ¿Música? Toca play</p>
+
+  <div class="panel" id="player-panel">
+    <div class="progress">
+      <span class="time cur">0:00</span>
+      <input class="seek" type="range" min="0" max="100" step="0.1" value="0" aria-label="Posición de la canción" />
+      <span class="time dur">0:00</span>
+    </div>
+    <div class="controls">
+      <button class="ctl" type="button" data-action="restart" aria-label="Reiniciar canción">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9.5 12z" /></svg>
+      </button>
+      <button class="ctl" type="button" data-action="back" aria-label="Retroceder 10 segundos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4" /><text x="12" y="15.5" text-anchor="middle" font-size="7" fill="currentColor" stroke="none" font-family="Oswald, sans-serif">10</text></svg>
+      </button>
+      <button class="ctl" type="button" data-action="forward" aria-label="Adelantar 10 segundos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v4h-4" /><text x="12" y="15.5" text-anchor="middle" font-size="7" fill="currentColor" stroke="none" font-family="Oswald, sans-serif">10</text></svg>
+      </button>
+      <button class="ctl mute" type="button" data-action="mute" aria-label="Silenciar">
+        <svg class="i-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor" /><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" /></svg>
+        <svg class="i-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor" /><path d="m17 9 5 6M22 9l-5 6" /></svg>
+      </button>
+      <input class="volume" type="range" min="0" max="1" step="0.05" value="0.7" aria-label="Volumen" />
+    </div>
+  </div>
+
+  <div class="bar">
+    <button class="disc" type="button" data-action="toggle" aria-label="Reproducir música">
+      <span class="vinyl" aria-hidden="true"></span>
+      <svg class="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+      <svg class="i-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z" /></svg>
+    </button>
+    <div class="meta">
+      <span class="song">{EVENT.music.title}</span>
+      <span class="artist">{EVENT.music.artist}</span>
+    </div>
+    <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+    <button class="expand" type="button" data-action="expand" aria-label="Mostrar controles" aria-controls="player-panel" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 15 6-6 6 6" /></svg>
+    </button>
+  </div>
+</aside>
+
+<script>
+  const root = document.querySelector<HTMLElement>('.player')!;
+  const audio = root.querySelector('audio')!;
+  const seek = root.querySelector<HTMLInputElement>('.seek')!;
+  const volume = root.querySelector<HTMLInputElement>('.volume')!;
+  const cur = root.querySelector('.cur')!;
+  const dur = root.querySelector('.dur')!;
+  const disc = root.querySelector<HTMLButtonElement>('.disc')!;
+  const expand = root.querySelector<HTMLButtonElement>('.expand')!;
+  const mute = root.querySelector<HTMLButtonElement>('.mute')!;
+
+  const fmt = (t: number) => (isFinite(t) ? `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}` : '0:00');
+  let seeking = false;
+
+  audio.volume = Number(volume.value);
+
+  const setOpen = (open: boolean) => {
+    root.dataset.open = String(open);
+    expand.setAttribute('aria-expanded', String(open));
+    expand.setAttribute('aria-label', open ? 'Ocultar controles' : 'Mostrar controles');
+  };
+
+  const actions: Record<string, () => void> = {
+    toggle: () => (audio.paused ? audio.play().catch(() => {}) : audio.pause()),
+    restart: () => { audio.currentTime = 0; audio.play().catch(() => {}); },
+    back: () => { audio.currentTime = Math.max(0, audio.currentTime - 10); },
+    forward: () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10); },
+    mute: () => { audio.muted = !audio.muted; },
+    expand: () => setOpen(root.dataset.open !== 'true'),
+  };
+
+  root.addEventListener('click', (e) => {
+    const btn = (e.target as Element).closest<HTMLElement>('[data-action]');
+    if (btn) actions[btn.dataset.action!]?.();
+    root.classList.add('touched');
+  });
+
+  audio.addEventListener('play', () => {
+    root.dataset.playing = 'true';
+    disc.setAttribute('aria-label', 'Pausar música');
+  });
+  audio.addEventListener('pause', () => {
+    root.dataset.playing = 'false';
+    disc.setAttribute('aria-label', 'Reproducir música');
+  });
+  audio.addEventListener('loadedmetadata', () => (dur.textContent = fmt(audio.duration)));
+  audio.addEventListener('timeupdate', () => {
+    cur.textContent = fmt(audio.currentTime);
+    if (!seeking && audio.duration) {
+      seek.value = String((audio.currentTime / audio.duration) * 100);
+      seek.style.setProperty('--p', `${seek.value}%`);
+    }
+  });
+  audio.addEventListener('volumechange', () => {
+    root.classList.toggle('is-muted', audio.muted || audio.volume === 0);
+    mute.setAttribute('aria-label', audio.muted ? 'Activar sonido' : 'Silenciar');
+  });
+
+  seek.addEventListener('input', () => {
+    seeking = true;
+    seek.style.setProperty('--p', `${seek.value}%`);
+    if (audio.duration) cur.textContent = fmt((Number(seek.value) / 100) * audio.duration);
+  });
+  seek.addEventListener('change', () => {
+    if (audio.duration) audio.currentTime = (Number(seek.value) / 100) * audio.duration;
+    seeking = false;
+  });
+
+  volume.addEventListener('input', () => {
+    audio.volume = Number(volume.value);
+    audio.muted = false;
+    volume.style.setProperty('--p', `${Number(volume.value) * 100}%`);
+  });
+  volume.style.setProperty('--p', `${Number(volume.value) * 100}%`);
+
+  // Oculta la invitación a reproducir después de unos segundos.
+  setTimeout(() => root.classList.add('touched'), 9000);
+</script>
+
+<style>
+  .player {
+    position: fixed;
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    z-index: 50;
+    width: min(300px, calc(100vw - 32px));
+    color: var(--paper);
+    font-family: var(--font-label);
+  }
+
+  .bar, .panel {
+    border-radius: 999px;
+    background: rgba(31, 19, 11, .88);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 14px 34px -12px rgba(0, 0, 0, .6), inset 0 0 0 1px rgba(201, 164, 92, .4);
+  }
+
+  .bar { display: flex; align-items: center; gap: 10px; padding: 6px 8px 6px 6px; }
+
+  button { border: 0; background: none; color: inherit; cursor: pointer; padding: 0; -webkit-tap-highlight-color: transparent; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--turquoise); outline-offset: 2px; }
+
+  /* Disco de vinil con botón play/pausa */
+  .disc { position: relative; flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; color: var(--leather-dark); }
+  .vinyl {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, var(--gold-light) 0 30%, var(--gold) 31% 34%, transparent 35%),
+      repeating-radial-gradient(circle, #1a0f08 0 2px, #2c1c10 2px 3.5px);
+    box-shadow: inset 0 0 0 1.5px rgba(201, 164, 92, .7);
+    animation: spin 3.5s linear infinite paused;
+  }
+  [data-playing='true'] .vinyl { animation-play-state: running; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .disc svg { position: relative; width: 16px; height: 16px; }
+  .i-pause, [data-playing='true'] .i-play { display: none; }
+  [data-playing='true'] .i-pause { display: block; }
+
+  .meta { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+  .song { font-size: .9rem; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .artist { font-family: var(--font-serif); font-style: italic; font-size: .85rem; opacity: .75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Ecualizador animado */
+  .eq { display: flex; align-items: flex-end; gap: 2px; height: 14px; opacity: 0; transition: opacity .3s; }
+  .eq i { width: 3px; height: 100%; border-radius: 2px; background: var(--gold); transform-origin: bottom; animation: eq 1s ease-in-out infinite paused; }
+  .eq i:nth-child(2) { animation-delay: -.4s; }
+  .eq i:nth-child(3) { animation-delay: -.7s; }
+  [data-playing='true'] .eq { opacity: 1; }
+  [data-playing='true'] .eq i { animation-play-state: running; }
+  @keyframes eq { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+
+  .expand { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; color: var(--gold); box-shadow: inset 0 0 0 1px rgba(201, 164, 92, .4); transition: transform .3s; }
+  .expand svg { width: 18px; }
+  [data-open='true'] .expand { transform: rotate(180deg); }
+
+  /* Panel de controles */
+  .panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(100% + 8px);
+    padding: 14px 16px 12px;
+    border-radius: 20px;
+    transform-origin: bottom right;
+    transition: opacity .25s ease, transform .25s ease, visibility .25s;
+  }
+  [data-open='false'] .panel { opacity: 0; transform: translateY(10px) scale(.96); visibility: hidden; pointer-events: none; }
+
+  .progress { display: flex; align-items: center; gap: 10px; }
+  .time { font-size: .72rem; letter-spacing: .05em; opacity: .8; font-variant-numeric: tabular-nums; min-width: 30px; }
+  .time.dur { text-align: right; }
+
+  input[type='range'] {
+    --p: 0%;
+    flex: 1;
+    min-width: 0;
+    height: 4px;
+    margin: 0;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--gold) var(--p), rgba(243, 231, 209, .2) var(--p));
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+  }
+  input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--gold-light); box-shadow: 0 0 0 3px rgba(201, 164, 92, .3); }
+  input[type='range']::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: var(--gold-light); }
+
+  .controls { display: flex; align-items: center; gap: 6px; margin-top: 12px; }
+  .ctl { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; color: var(--paper); transition: background .2s, color .2s; }
+  .ctl:hover { background: rgba(201, 164, 92, .18); color: var(--gold-light); }
+  .ctl svg { width: 20px; height: 20px; }
+  .i-off, .is-muted .i-on { display: none; }
+  .is-muted .i-off { display: block; }
+  .volume { margin-left: 4px; }
+
+  /* Globo de invitación a reproducir */
+  .hint {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    margin: 0;
+    padding: 8px 14px;
+    border-radius: 12px;
+    background: var(--gold-light);
+    color: var(--leather-dark);
+    font-size: .8rem;
+    letter-spacing: .06em;
+    white-space: nowrap;
+    box-shadow: 0 10px 20px -8px rgba(0, 0, 0, .4);
+    animation: nudge 2.4s ease-in-out 1.5s infinite;
+    transition: opacity .4s, visibility .4s;
+  }
+  .hint::after { content: ''; position: absolute; right: 22px; top: 100%; border: 7px solid transparent; border-top-color: var(--gold-light); }
+  @keyframes nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  .touched .hint, [data-open='true'] .hint { opacity: 0; visibility: hidden; }
+</style>

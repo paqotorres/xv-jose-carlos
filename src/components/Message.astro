@@ -1,0 +1,26 @@
+---
+import Divider from './Divider.astro';
+---
+<section id="mensaje" class="section message">
+  <div class="container" data-reveal>
+    <Divider />
+    <blockquote>
+      <p>Con la bendición de Dios y el amor de mi Familia, sería un honor que me acompañaras en este momento tan especial.</p>
+    </blockquote>
+  </div>
+</section>
+
+<style>
+  .message { padding-top: 56px; }
+  blockquote { margin: 0 auto; max-width: 30ch; }
+  blockquote p {
+    margin: 0;
+    font-size: clamp(1.45rem, 4.6vw, 1.95rem);
+    font-style: italic;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  blockquote p::before, blockquote p::after { font-family: var(--font-western); color: var(--gold); font-style: normal; }
+  blockquote p::before { content: '“'; margin-right: 4px; }
+  blockquote p::after { content: '”'; margin-left: 4px; }
+</style>

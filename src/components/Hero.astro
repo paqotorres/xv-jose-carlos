@@ -1,0 +1,195 @@
+---
+import Hat from './icons/Hat.astro';
+import SheriffStar from './icons/SheriffStar.astro';
+import Countdown from './Countdown.astro';
+import { EVENT } from '../data/event';
+
+// Posición (en el viewBox de 1440) y escala de cada cactus sobre el piso.
+const cacti = [
+  { x: 140, s: 1.15 },
+  { x: 560, s: 0.75 },
+  { x: 900, s: 0.95 },
+  { x: 1300, s: 1.2 },
+];
+---
+<header class="hero">
+  <div class="stars" aria-hidden="true"></div>
+
+  <div class="frame container">
+    <SheriffStar class="corner-star tl" />
+    <SheriffStar class="corner-star tr" />
+
+
+    <Hat class="hat" crown="#b07a45" band="#1f130b" />
+
+    <p class="script">Mis XV años</p>
+    <h1 class="name">{EVENT.celebrant}</h1>
+
+    <div class="date" aria-label={EVENT.dateLabel}>
+      <span class="side">Viernes</span>
+      <span class="day">09</span>
+      <span class="side">Octubre<br />2026</span>
+    </div>
+
+    <div class="rope short"></div>
+
+    <p class="eyebrow cd-title">Faltan</p>
+    <Countdown />
+
+    <a class="scroll" href="#mensaje" aria-label="Ver invitación">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m6 9 6 6 6-6" /></svg>
+    </a>
+  </div>
+
+  <div class="desert" aria-hidden="true">
+    <svg class="layer" viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax slice">
+      <path class="far" d="M0 132 100 96l80 20 120-62 120 56 100-20 120 42 120-60 120 46 100-22 120-36 120 50 100-26 120 36v80H0Z" />
+      <path class="near" d="m0 162 120-32 110 20 130-46 110 40 130-20 120 26 120-36 120 36 120-22 120 22 120-32 120 28v54H0Z" />
+    </svg>
+    <div class="ground"></div>
+    <svg class="layer" viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax slice">
+      {cacti.map(({ x, s }) => (
+        <g class="cactus" transform={`translate(${x} 171) scale(${s})`}>
+          <path d="M0 0V-64M0-20h-10q-8 0-8-8v-16M0-32h10q8 0 8-8v-14" />
+          <path class="rib" d="M0-4v-54" />
+        </g>
+      ))}
+    </svg>
+  </div>
+</header>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 56px 0 clamp(150px, 15vw, 230px);
+    color: var(--paper);
+    text-align: center;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 80% 55% at 50% 30%, rgba(201, 164, 92, .22), transparent 70%),
+      var(--noise),
+      linear-gradient(180deg, #2a190d 0%, var(--leather) 55%, var(--leather-mid) 100%);
+  }
+  .stars {
+    position: absolute;
+    inset: 0 0 40% 0;
+    background-image:
+      radial-gradient(1.4px 1.4px at 12% 18%, rgba(232, 207, 149, .8), transparent),
+      radial-gradient(1px 1px at 28% 42%, rgba(232, 207, 149, .6), transparent),
+      radial-gradient(1.6px 1.6px at 71% 14%, rgba(232, 207, 149, .8), transparent),
+      radial-gradient(1px 1px at 86% 38%, rgba(232, 207, 149, .6), transparent),
+      radial-gradient(1.2px 1.2px at 52% 8%, rgba(232, 207, 149, .7), transparent),
+      radial-gradient(1px 1px at 92% 64%, rgba(232, 207, 149, .5), transparent),
+      radial-gradient(1px 1px at 6% 60%, rgba(232, 207, 149, .5), transparent);
+    animation: twinkle 5s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle { from { opacity: .5; } to { opacity: 1; } }
+
+  .frame {
+    position: relative;
+    z-index: 2;
+    padding: clamp(36px, 7vw, 56px) clamp(12px, 4vw, 40px);
+    border: 1px solid rgba(201, 164, 92, .5);
+    border-radius: 18px;
+    outline: 1px dashed rgba(201, 164, 92, .35);
+    outline-offset: -10px;
+    animation: rise 1.2s cubic-bezier(.2, .7, .2, 1) both;
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } }
+
+  .corner-star { position: absolute; top: -15px; width: 30px; height: 30px; color: var(--gold); }
+  .corner-star.tl { left: 20px; }
+  .corner-star.tr { right: 20px; }
+
+  .cd-title { color: var(--gold); }
+  .hat {
+    width: clamp(120px, 34vw, 180px);
+    margin: 6px auto 0;
+    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .45));
+    animation: tip 6s ease-in-out infinite;
+    transform-origin: 50% 90%;
+  }
+  @keyframes tip { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+
+  .script {
+    font-family: var(--font-script);
+    font-size: clamp(2.6rem, 10vw, 4rem);
+    line-height: 1;
+    margin: 8px 0 0;
+    color: var(--gold-light);
+  }
+  .name {
+    font-family: var(--font-western);
+    font-weight: 400;
+    font-size: clamp(2.7rem, 12vw, 5.6rem);
+    line-height: 1;
+    margin: 6px 0 0;
+    background: linear-gradient(180deg, #f5e3b5 0%, #d6b56d 50%, #a8823e 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .35));
+  }
+
+  .date {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 26px auto 22px;
+    font-family: var(--font-label);
+    text-transform: uppercase;
+    letter-spacing: .22em;
+  }
+  .side {
+    min-width: 92px;
+    padding: 6px 0;
+    border-block: 1px solid rgba(201, 164, 92, .6);
+    font-size: .8rem;
+    line-height: 1.35;
+  }
+  .day { font-family: var(--font-western); font-size: 3rem; line-height: 1; color: var(--gold-light); letter-spacing: 0; }
+
+  .rope.short { width: 120px; margin: 0 auto 26px; }
+  .cd-title { margin-bottom: 14px; }
+
+  .scroll {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin-top: 28px;
+    border-radius: 50%;
+    color: var(--gold);
+    box-shadow: inset 0 0 0 1px rgba(201, 164, 92, .5);
+    animation: bob 2.2s ease-in-out infinite;
+  }
+  .scroll svg { width: 20px; }
+  @keyframes bob { 50% { transform: translateY(6px); } }
+
+  .desert {
+    position: absolute;
+    inset: auto 0 -1px 0;
+    height: clamp(130px, 14vw, 220px);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .layer { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .far { fill: #5c3a22; opacity: .55; }
+  .near { fill: #24160c; }
+  /* El piso usa el mismo fondo que la página para que no se note la unión. */
+  .ground {
+    position: absolute;
+    inset: 0;
+    background: var(--paper) var(--noise);
+    --shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 200' preserveAspectRatio='xMidYMax slice'%3E%3Cpath d='M0 200v-28c200-22 380 6 560-6 200-14 340 10 520-2 160-10 260 6 360-2v38Z'/%3E%3C/svg%3E");
+    -webkit-mask: var(--shape) center bottom / cover no-repeat;
+    mask: var(--shape) center bottom / cover no-repeat;
+  }
+  .cactus path { fill: none; stroke: #6d8250; stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+  .cactus .rib { stroke: #87a063; stroke-width: 2.5; }
+</style>

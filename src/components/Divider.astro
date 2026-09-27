@@ -1,0 +1,22 @@
+---
+import Horseshoe from './icons/Horseshoe.astro';
+interface Props { tone?: 'light' | 'dark'; }
+const { tone = 'dark' } = Astro.props;
+---
+<div class:list={['divider', tone]} aria-hidden="true">
+  <span class="line"></span>
+  <span class="dot"></span>
+  <Horseshoe class="shoe" />
+  <span class="dot"></span>
+  <span class="line"></span>
+</div>
+
+<style>
+  .divider { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 28px auto; max-width: 340px; }
+  .line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, currentColor); }
+  .line:last-child { background: linear-gradient(270deg, transparent, currentColor); }
+  .dot { width: 5px; height: 5px; transform: rotate(45deg); background: currentColor; }
+  .shoe { width: 34px; height: 34px; color: var(--gold); }
+  .dark { color: var(--rust); }
+  .light { color: var(--gold-light); }
+</style>

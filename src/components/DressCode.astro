@@ -1,0 +1,35 @@
+---
+import Hat from './icons/Hat.astro';
+import Boot from './icons/Boot.astro';
+import Divider from './Divider.astro';
+---
+<section class="section section--leather dress">
+  <div class="rope top"></div>
+  <div class="container" data-reveal>
+    <p class="eyebrow">Dress code</p>
+    <h2 class="title">Vaquero</h2>
+
+    <div class="icons" aria-hidden="true">
+      <Boot class="boot left" />
+      <Hat class="hat" crown="#c9a45c" band="#34200f" />
+      <Boot class="boot right" />
+    </div>
+
+    <Divider tone="light" />
+    <p class="reminder">¡No olvides tu sombrero!</p>
+  </div>
+  <div class="rope bottom"></div>
+</section>
+
+<style>
+  .dress { overflow: hidden; }
+  .rope.top, .rope.bottom { position: absolute; left: 0; right: 0; border-radius: 0; }
+  .rope.top { top: 0; }
+  .rope.bottom { bottom: 0; }
+  .icons { display: flex; align-items: flex-end; justify-content: center; gap: clamp(10px, 4vw, 28px); margin-top: 34px; }
+  .hat { width: clamp(130px, 36vw, 190px); filter: drop-shadow(0 12px 14px rgba(0, 0, 0, .45)); }
+  .boot { width: clamp(48px, 13vw, 70px); color: var(--rust); }
+  .boot.left { transform: scaleX(-1) rotate(6deg); }
+  .boot.right { transform: rotate(6deg); }
+  .reminder { font-family: var(--font-script); font-size: clamp(2.2rem, 8vw, 3rem); line-height: 1.2; color: var(--gold-light); margin: 0; }
+</style>

@@ -1,0 +1,90 @@
+<!doctype html>
+<!-- Plantilla de la imagen de vista previa (1200x630). Regenerar con: npm run og -->
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=Pinyon+Script&family=Rye&display=block" rel="stylesheet" />
+<style>
+  :root {
+    --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .18 0 0 0 0 .08 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    position: relative;
+    color: #f3e7d1;
+    text-align: center;
+    background:
+      radial-gradient(ellipse 60% 70% at 50% 42%, rgba(201, 164, 92, .24), transparent 70%),
+      var(--noise),
+      linear-gradient(180deg, #2a190d 0%, #34200f 55%, #4a2f1a 100%);
+  }
+  .desert { position: absolute; left: 0; right: 0; bottom: 0; width: 1200px; height: 150px; }
+  .frame {
+    position: absolute;
+    inset: 30px 40px;
+    border: 1.5px solid rgba(201, 164, 92, .6);
+    border-radius: 22px;
+    outline: 1.5px dashed rgba(201, 164, 92, .4);
+    outline-offset: -12px;
+  }
+  .star { position: absolute; top: -20px; width: 40px; height: 40px; color: #c9a45c; }
+  .star.l { left: 28px; } .star.r { right: 28px; }
+  .content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 20px; }
+  .hat { width: 190px; filter: drop-shadow(0 12px 16px rgba(0,0,0,.5)); }
+  .script { font-family: 'Pinyon Script', cursive; font-size: 72px; line-height: 1; margin: 10px 0 0; color: #e8cf95; }
+  .name {
+    font-family: 'Rye', serif; font-weight: 400; font-size: 128px; line-height: 1.05; margin: 4px 0 0;
+    background: linear-gradient(180deg, #f5e3b5 0%, #d6b56d 50%, #a8823e 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 4px 0 rgba(0,0,0,.4));
+  }
+  .date { display: flex; align-items: center; gap: 26px; margin-top: 22px; font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: .24em; }
+  .side { min-width: 150px; padding: 8px 0; border-block: 1px solid rgba(201,164,92,.65); font-size: 20px; line-height: 1.35; }
+  .day { font-family: 'Rye', serif; font-size: 70px; line-height: 1; color: #e8cf95; letter-spacing: 0; }
+</style>
+</head>
+<body>
+  <svg class="desert" viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax slice">
+    <path d="M0 132 100 96l80 20 120-62 120 56 100-20 120 42 120-60 120 46 100-22 120-36 120 50 100-26 120 36v80H0Z" fill="#5c3a22" opacity=".45" />
+    <path d="m0 162 120-32 110 20 130-46 110 40 130-20 120 26 120-36 120 36 120-22 120 22 120-32 120 28v54H0Z" fill="#24160c" opacity=".85" />
+  </svg>
+
+  <div class="frame">
+    <svg class="star l" viewBox="0 0 100 100"><use href="#star" /></svg>
+    <svg class="star r" viewBox="0 0 100 100"><use href="#star" /></svg>
+  </div>
+
+  <div class="content">
+    <svg class="hat" viewBox="0 0 200 110">
+      <path d="M58 72C54 46 62 16 82 18c10 1 13 12 18 12s8-11 18-12c20-2 28 28 24 54Z" fill="#b07a45" />
+      <path d="M100 30c-2 12-1 25 0 34" stroke="rgba(0,0,0,.25)" stroke-width="2.5" fill="none" stroke-linecap="round" />
+      <path d="M57 61c28 6 58 6 86 0l-1 11c-27 5-57 5-84 0Z" fill="#1f130b" />
+      <circle cx="100" cy="68" r="4.5" fill="#e3c88a" />
+      <path d="M6 66c8-6 24-2 40 4 20 7 88 7 108 0 16-6 32-10 40-4 4 4-4 18-24 26-24 9-116 9-140 0C10 84 2 70 6 66Z" fill="#b07a45" />
+      <path d="M30 88c30 8 110 8 140 0" stroke="rgba(0,0,0,.2)" stroke-width="2" fill="none" />
+    </svg>
+    <p class="script">Mis XV años</p>
+    <h1 class="name">José Carlos</h1>
+    <div class="date">
+      <span class="side">Viernes</span>
+      <span class="day">09</span>
+      <span class="side">Octubre<br />2026</span>
+    </div>
+  </div>
+
+  <svg width="0" height="0" style="position:absolute"><defs><g id="star" fill="currentColor"></g></defs></svg>
+  <script>
+    const g = document.getElementById('star');
+    const pts = [];
+    let circles = '';
+    for (let i = 0; i < 12; i++) {
+      const a = (Math.PI / 6) * i - Math.PI / 2, r = i % 2 ? 22 : 42;
+      const x = 50 + r * Math.cos(a), y = 50 + r * Math.sin(a);
+      pts.push(`${x},${y}`);
+      if (!(i % 2)) circles += `<circle cx="${x}" cy="${y}" r="5" />`;
+    }
+    g.innerHTML = `<polygon points="${pts.join(' ')}" />${circles}<circle cx="50" cy="50" r="13" fill="none" stroke="#1f130b" stroke-width="2" opacity=".45" />`;
+  </script>
+</body>
+</html>
